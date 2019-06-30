@@ -211,12 +211,12 @@ function tiar(
                 if err[k,s]<tol; conv_eig=conv_eig+1; end
             end
             idx=sortperm(err[k,1:k]); # sort the error
-            err[1:k,k]=err[idx,k];
+            err[k,1:k]=err[k,idx];
             # extract the converged Ritzpairs
             if (k==m)||(conv_eig>=Neig)
                 nrof_eigs = Int(min(length(λ),Neig))
                 λ=λ[idx[1:nrof_eigs]]
-                Q=Q[:,idx[1:length(λ)]]
+                Q=Q[:,idx[1:nrof_eigs]]
             end
             conv_eig_hist[k]=conv_eig
         end
@@ -225,9 +225,9 @@ function tiar(
     k=k-1
     # NoConvergenceException
     if conv_eig<Neig && Neig != Inf
-       err=err[end,1:Neig];
-       idx=sortperm(err); # sort the error
-       λ=λ[idx];  Q=Q[:,idx]; err=err[idx];
+        err=err[end,1:Neig];
+        idx=sortperm(err); # sort the error
+        λ=λ[idx];  Q=Q[:,idx]; err=err[idx];
         msg="Number of iterations exceeded. maxit=$(maxit)."
         if conv_eig<3
             msg=string(msg, " Check that σ is not an eigenvalue.")
