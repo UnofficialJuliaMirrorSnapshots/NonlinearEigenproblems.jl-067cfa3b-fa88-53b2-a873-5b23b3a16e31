@@ -45,13 +45,17 @@ These solvers are currently available (see https://nep-pack.github.io/NonlinearE
     * Broyden's method 
 * Arnoldi/Krylov type
     * NLEIGS
-    * Infinite Arnoldi method (IAR, TIAR, Infinite bi-Lanczos, Infinite Lanczos)
+    * Infinite Arnoldi method: (iar)
+    * Tensor infinite Arnoldi method  (tiar)
+    * Infinite bi-Lanczos (infbilanczos)
+    * Infinite Lanczos (ilan)
 * Projection methods
-    * Jacobi-Davidson (two versions)
-    * Nonlinear Arnoldi method
-* Contour integral 
+    * Jacobi-Davidson (jd_effenberger)
+    * Jacobi-Davidson (jd_betcke)
+    * Nonlinear Arnoldi method (nlar)
+* Contour integral methods
     * Beyn's contour integral method
-    * Higher momement contour integral method (a.k.a the Asakura&Sakurai method)
+    * Block SS (Higher moments) contour integral method of Asakura & Sakurai
 * Deflation
     * Effenberger style deflation
     
