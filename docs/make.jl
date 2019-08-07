@@ -12,6 +12,7 @@ makedocs(
         "NEP Types" => "types.md",
         "LinSolver" => "linsolvers.md",
         "Error measure" => "errmeasure.md",
+        "Logger" => "logger.md",
         "NEP Transformations" => "transformations.md",
         "NEP Gallery" => "gallery.md",
         "Tutorial 1 (ABC)" => "movebc_tutorial.md",
@@ -21,6 +22,9 @@ makedocs(
         "Tutorial 5 (Python NEP)" => "tutorial_call_python.md",
         "Tutorial 6 (MATLAB 1)" => "tutorial_matlab1.md",
         "Tutorial 7 (FORTRAN 1)" => "tutorial_fortran1.md",
+        "Tutorial 8 (gmsh + nanophotonics)" => "tutorial_nano1.md",
+        "Tutorial 9 (New solver)" => "tutorial_newmethod.md",
+
     ]
 )
 
