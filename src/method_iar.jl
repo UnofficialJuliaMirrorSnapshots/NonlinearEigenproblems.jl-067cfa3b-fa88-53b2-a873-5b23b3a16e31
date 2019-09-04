@@ -6,7 +6,7 @@ using Random
 using Statistics
 
 """
-    iar(nep,[maxit=30,][σ=0,][γ=1,][linsolvecreator=DefaultLinSolverCreator(),][tol=eps()*10000,][neigs=6,][errmeasure,][v=rand(size(nep,1),1),][logger=0,][check_error_every=1,][orthmethod=DGKS,][proj_solve=false,][inner_solver_method=DefaultInnerSolver,][inner_logger=0])
+    iar(nep,[maxit=30,][σ=0,][γ=1,][linsolvecreator=DefaultLinSolverCreator(),][tol=eps()*10000,][neigs=6,][errmeasure,][v=rand(size(nep,1),1),][logger=0,][check_error_every=1,][orthmethod=DGKS,][proj_solve=false,][inner_solver_method=DefaultInnerSolver(),][inner_logger=0])
 
 Run the infinite Arnoldi method on the nonlinear eigenvalue problem stored in `nep`.
 
@@ -24,7 +24,7 @@ The parameter `proj_solve` determines if the Ritz paris are extracted using the 
 or as the solution to a projected problem (true). If true, the method is descided by `inner_solver_method`, and the
 logging of the inner solvers are descided by `inner_logger`, which works in the same way as `logger`.
 
-See [`newton`](@ref) for other parameters.
+See [`augnewton`](@ref) for other parameters.
 
 # Example
 ```julia-repl
@@ -52,14 +52,14 @@ function iar(
     linsolvercreator=DefaultLinSolverCreator(),
     tol=eps(real(T))*10000,
     neigs=6,
-    errmeasure::ErrmeasureType = DefaultErrmeasure,
+    errmeasure::ErrmeasureType = DefaultErrmeasure(nep),
     σ=zero(T),
     γ=one(T),
     v=randn(real(T),size(nep,1)),
     logger=0,
     check_error_every=1,
     proj_solve=false,
-    inner_solver_method=DefaultInnerSolver,
+    inner_solver_method=DefaultInnerSolver(),
     inner_logger=0)where{T<:Number,T_orth<:IterativeSolvers.OrthogonalizationMethod}
 
     @parse_logger_param!(logger)
@@ -90,8 +90,6 @@ function iar(
         pnep=create_proj_NEP(nep);
     end
 
-    # Init errmeasure
-    ermdata=init_errmeasure(errmeasure,nep);
 
     while (k <= m) && (conv_eig<neigs)
 
@@ -135,7 +133,7 @@ function iar(
             conv_eig=0;
             # compute the errors
             err[k,1:size(λ,1)]=
-              map(s-> estimate_error(ermdata,λ[s],Q[:,s]), 1:size(λ,1))
+              map(s-> estimate_error(errmeasure,λ[s],Q[:,s]), 1:size(λ,1))
             # Log them and compute the converged
             push_iteration_info!(logger,2, k,err=err[k,1:size(λ,1)], λ=λ,
                                  continues=true);

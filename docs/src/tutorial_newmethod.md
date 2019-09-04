@@ -25,8 +25,8 @@ satisfy
 f(λ)=\det(M(λ))=0
 ```
 The application of Halley's method to this nonlinear scalar equation
-will serve as an example solver and does to our
-knowledge not lead to a competive algorithm.
+will serve as an example solver, although it does, to our
+knowledge, not lead to a competive algorithm.
 Halley's method for the root-finding problem is
 defined as the
 ```math
@@ -46,17 +46,18 @@ estimate the derivatives, i.e.,
 
 Let us first define our solver function
 and introduce the function of which we wish to find the roots.
-The matrix `M(λ)` is obtained from the
+The matrix ``M(λ)`` is obtained from the
 `compute_Mder`-function.
 ```julia
+using NonlinearEigenproblems
 function halley(nep::NEP;λ=0.0,δ=sqrt(eps()),maxit=100,tol=eps()*100)
    f=s-> det(compute_Mder(nep,s)); # The objective function
    # More code here
 end
 ```
-The main loop (which should go in *More code here*) can be implemented
+The main loop (which should go in *More code here*) can be implemented,
 in a way that does not involve many function
-evaluations as follows:
+evaluations, as follows:
 ```julia
    for i=1:maxit
        fλ=f(λ)
@@ -90,7 +91,7 @@ We can verify that this is actually
 a solution easily if we also
 have an approximate eigenvector. An eigenvector
 can be computed by essentially one step of inverse iteration,
-on the matrix `M(λ)`:
+on the matrix ``M(λ)``:
 ```julia
 julia> x=normalize(compute_Mder(nep,λ)\ones(size(nep,1)))
 5-element Array{Float64,1}:
@@ -100,7 +101,7 @@ julia> x=normalize(compute_Mder(nep,λ)\ones(size(nep,1)))
   0.5577415634513512
   0.6832678503094953
 ```
-The residual norm  `|M(λ)x|` does indeed become almost zero
+The residual norm  ``|M(λ)x|`` does indeed become almost zero
 so it seems we have a solution:
 ```julia
 julia> norm(compute_Mlincomb(nep,λ,x))
@@ -112,22 +113,23 @@ julia> norm(compute_Mlincomb(nep,λ,x))
 In the following we illustrate a more advanced
 usage of the NEP-PACK method development:
 NEP-PACKs logging facility  and error estimation.
-See [`Logger`](logger.md) and [`Errmeasure`](errmeasure.md). This gives access
+See [`Logger`](logger.md) and [`Errmeasure`](errmeasure.md). This
+gives access
 to other ways to measure error as well as a logging
 which is the same for all solvers and simplifies
 comparisons.
 
 ```julia
-using NonlinearEigenproblems, LinearAlgebra
+using NonlinearEigenproblems, LinearAlgebra, Plots
 function halley(nep::NEP;λ=0.0,δ=sqrt(eps()),maxit=100,
                 tol=eps()*100,logger=0,
-                errmeasure = DefaultErrmeasure)
+                errmeasure = DefaultErrmeasure(nep))
+    # Setup the logger.
     @parse_logger_param!(logger);
+
     n=size(nep,1);
     f=s-> det(compute_Mder(nep,s)); # The objective function
 
-    # Init errmeasure. Precomputation for an error measure.
-    ermdata=init_errmeasure(errmeasure,nep);
 
     for i=1:maxit
         fλ=f(λ)
@@ -174,6 +176,7 @@ julia> plot(mylogger.errs[1:10,1],yaxis=:log)
 We clearly observe the superlinear convergence:
 ```@example
 using PyPlot # hide
+clf(); # hide
 z=[ 0.08492602120772309   # hide
         0.07450867012944977 # hide
         0.032639292900081246 # hide

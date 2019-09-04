@@ -22,7 +22,7 @@ end
 
 
 """
-    jd_betcke([eltype]], nep::ProjectableNEP; [neigs=1], [tol=eps(real(T))*100], [maxit=100], [λ=zero(T)], [orthmethod=DGKS],  [errmeasure], [linsolvercreator=DefaultLinSolverCreator()], [v = randn(size(nep,1))], [logger=0], [inner_logger=0], [inner_solver_method=DefaultInnerSolver], [projtype=:PetrovGalerkin], [target=zero(T)])
+    jd_betcke([eltype]], nep::ProjectableNEP; [neigs=1], [tol=eps(real(T))*100], [maxit=100], [λ=zero(T)], [orthmethod=DGKS],  [errmeasure], [linsolvercreator=DefaultLinSolverCreator()], [v = randn(size(nep,1))], [logger=0], [inner_logger=0], [inner_solver_method=DefaultInnerSolver()], [projtype=:PetrovGalerkin], [target=zero(T)])
 The function computes eigenvalues using Jacobi-Davidson method, which is a projection method.
 The projected problems are solved using a solver spcified through the type `inner_solver_method`.
 The logging of the inner solvers are descided by `inner_logger`, which works in the same way as `logger`.
@@ -32,7 +32,7 @@ The value `λ` and the vector `v` are initial guesses for an eigenpair. `linsolv
 The `target` is the center around which eiganvlues are computed.
 By default the method uses a Petrov-Galerkin framework, with a trial (left) and test (right) space, hence ``W^H T(λ) V`` is the projection considered. By specifying  `projtype` to be `:Galerkin` then `W=V`.
 
-See [`newton`](@ref) for other parameters.
+See [`augnewton`](@ref) for other parameters.
 
 
 # Example
@@ -55,9 +55,9 @@ function jd_betcke(::Type{T},
                    maxit::Int = 100,
                    neigs::Int = 1,
                    projtype::Symbol = :PetrovGalerkin,
-                   inner_solver_method::Type = DefaultInnerSolver,
+                   inner_solver_method = DefaultInnerSolver(),
                    orthmethod::Type{T_orth} = IterativeSolvers.DGKS,
-                   errmeasure::ErrmeasureType = DefaultErrmeasure,
+                   errmeasure::ErrmeasureType = DefaultErrmeasure(nep),
                    linsolvercreator=DefaultLinSolverCreator(),
                    tol::Number = eps(real(T))*100,
                    λ::Number = zero(T),
@@ -77,7 +77,7 @@ function jd_betcke(::Type{T},
     if (projtype != :Galerkin) && projtype != :PetrovGalerkin
         error("Only accepted values of 'projtype' are :Galerkin and :PetrovGalerkin.")
     end
-    if (projtype != :Galerkin) && (inner_solver_method == SGIterInnerSolver)
+    if (projtype != :Galerkin) && (typeof(inner_solver_method) == SGIterInnerSolver)
         error("Need to use 'projtype' :Galerkin in order to use SGITER as inner solver.")
     end
 
@@ -91,11 +91,9 @@ function jd_betcke(::Type{T},
     normalize!(u)
     conveig = 0
 
-    # Init errmeasure
-    ermdata=init_errmeasure(errmeasure,nep);
 
     # Initial check for convergence
-    err = estimate_error(ermdata,λ,u)
+    err = estimate_error(errmeasure,λ,u)
     if (err < tol) #Frist check, no other eiganvalues can be converged
         conveig += 1
         λ_vec[conveig] = λ
@@ -143,7 +141,7 @@ function jd_betcke(::Type{T},
         u[:] = V*s
 
         # Check for convergence
-        err = estimate_error(ermdata,λ,u)
+        err = estimate_error(errmeasure,λ,u)
         push_iteration_info!(logger,k,λ=λ,err=err,continues=true)
         push_info!(logger," conveig=$conveig");
 
@@ -188,7 +186,7 @@ end
 
 
 """
-    jd_effenberger([eltype]], nep::ProjectableNEP; [maxit=100], [neigs=1], [inner_solver_method=DefaultInnerSolver], [orthmethod=DGKS], [linsolvercreator=DefaultLinSolverCreator()], [tol=eps(real(T))*100], [λ=zero(T)], [v = rand(T,size(nep,1))], [target=zero(T)],  [logger=0], [inner_logger=0])
+    jd_effenberger([eltype]], nep::ProjectableNEP; [maxit=100], [neigs=1], [inner_solver_method=DefaultInnerSolver()], [orthmethod=DGKS], [linsolvercreator=DefaultLinSolverCreator()], [tol=eps(real(T))*100], [λ=zero(T)], [v = rand(T,size(nep,1))], [target=zero(T)],  [logger=0], [inner_logger=0])
 The function computes eigenvalues using the Jacobi-Davidson method, which is a projection method.
 Repreated eigenvalues are avoided by using deflation, as presented in the reference by Effenberger.
 The projected problems are solved using a solver spcified through the type `inner_solver_method`.
@@ -198,7 +196,7 @@ The function tries to compute `neigs` number of eigenvalues, and throws a `NoCon
 The value `λ` and the vector `v` are initial guesses for an eigenpair. `linsolvercreator` is a function which specifies how the linear system is created and solved.
 The `target` is the center around which eiganvalues are computed. For further specifications on the `deflation_mode`, see the function `deflate_eigpair`.
 
-See [`newton`](@ref) for other parameters.
+See [`augnewton`](@ref) for other parameters.
 
 
 # Example
@@ -220,7 +218,7 @@ function jd_effenberger(::Type{T},
                         nep::ProjectableNEP;
                         maxit::Int = 100,
                         neigs::Int = 1,
-                        inner_solver_method::Type = DefaultInnerSolver,
+                        inner_solver_method = DefaultInnerSolver(),
                         orthmethod::Type{T_orth} = IterativeSolvers.DGKS,
                         linsolvercreator=DefaultLinSolverCreator(),
                         tol::Number = eps(real(T))*100,
@@ -239,7 +237,7 @@ function jd_effenberger(::Type{T},
     if (maxit > n)
         error("maxit = ", maxit, " is larger than size of NEP = ", n,".")
     end
-    if (inner_solver_method == SGIterInnerSolver)
+    if (typeof(inner_solver_method) == SGIterInnerSolver)
         error("_Method SGITER not accepted as inner solver since deflated problem not min-max.")
     end
 
@@ -329,7 +327,7 @@ function jd_effenberger_inner!(::Type{T},
                               maxit::Int,
                               nrof_its::Int,
                               conveig::Int,
-                              inner_solver_method::Type,
+                              inner_solver_method,
                               orthmethod::Type,
                               linsolvercreator,
                               tol::Number,
