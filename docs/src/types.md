@@ -1,4 +1,4 @@
-# NEP Types
+# Types & Data structures
 
 ## The basic type
 The basic class is the abstract class `NEP` which represents
@@ -98,22 +98,13 @@ GenericSumNEP
 SPMFSumNEP
 ```
 
-
-# Accessing the NEP
-
-The nonlinear eigenvalue problem is defined by the data
-stored in the NEP-class, and the NEP-solvers access
-the data mainly through three main functions, `compute_Mder`
-`compute_Mlincomb` and `compute_MM`.
+## Low-rank NEPs
 
 ```@docs
-compute_Mder
+LowRankFactorizedNEP
 ```
 
-```@docs
-compute_Mlincomb!
-```
-
-```@docs
-compute_MM
-```
+## Helper types
+There are also the helper types [`Mder_NEP`](@ref) and
+[`Mder_Mlincomb_NEP`](@ref). These are further described in
+the section about [Compute functions](compute_functions.md)

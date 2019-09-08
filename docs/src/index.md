@@ -87,13 +87,13 @@ tolerance for iteration termination.
     an example how to use `mslp` and that citation credit should go to *A. Ruhe,
     Algorithms for the nonlinear eigenvalue problem, SIAM J. Numer. Anal.
     10 (1973) 674-689*. This documentation is the same as the online documentation
-    under the tab [NEP Methods](methods.md).
+    under the tab [NEP-solvers](methods.md).
 
 
 
 ## A model of a neuron
 
-The following (delay) differential equation models a neuron
+The following (delay) differential equation models the interaction of two neuron
 ```math
 \dot{x}_1(t)=-\kappa x_1(t)+\beta\tanh(x_1(t-\tau_3))+a_1\tanh(x_2(t-\tau_2))
 ```
@@ -237,7 +237,7 @@ or
 [deflation](deflate_tutorial.md).
 See also the other tutorials (in the side-bar),
 or have a look at the examples
-in [NEP methods](methods.md) and  [NEP Gallery](gallery.md).
+in [NEP-solvers](methods.md) and  [NEP Gallery](gallery.md).
 
 
 ![To the top](http://jarlebring.se/onepixel.png?NEPPACKDOC)

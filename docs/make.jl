@@ -7,15 +7,17 @@ makedocs(
     doctest = false,
     sitename = "NEP-PACK",
     pages = Any[
-        "Home" => "index.md",
+        "Introduction" => "index.md",
         "Manual" => [
         "methods.md",
-        "types.md",
+            "types.md",
+        "compute_functions.md",
         "linsolvers.md",
         "innersolvers.md",
         "errmeasure.md",
         "logger.md",
         "transformations.md",
+        "deflation.md",
             "gallery.md"],
         "Tutorials" => [
         "Tutorial 1 (ABC)" => "movebc_tutorial.md",
@@ -28,7 +30,7 @@ makedocs(
         "Tutorial 8 (gmsh + nanophotonics)" => "tutorial_nano1.md",
         "Tutorial 9 (New solver)" => "tutorial_newmethod.md",
         "Tutorial 10 (Linear solvers)" => "tutorial_linsolve.md",
-            "Tutorial 11 (Orr-Somerfeld)" => "hydrotutorial.md"
+            "Tutorial 11 (Orr--Somerfeld)" => "hydrotutorial.md"
             ]
     ]
 )
