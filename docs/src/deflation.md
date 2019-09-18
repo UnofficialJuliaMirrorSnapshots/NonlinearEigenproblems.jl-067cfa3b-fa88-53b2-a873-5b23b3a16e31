@@ -69,7 +69,7 @@ T(λ)=
 \begin{bmatrix}0&0\\x^T & 0\end{bmatrix}
 ```
 Clearly, the deflated NEP has more SPMF-terms than the original `NEP`.
-When the parameter `mode=:SPMF` is set, the deflation method will explicitly construct an [`SPMF_NEP`](@ref). 
+When the parameter `mode=:SPMF` is set, the deflation method will explicitly construct an [`SPMF_NEP`](@ref).
 This is not recommended if you have many SPMF-terms in the original problem, but can be efficient when you
 only have a few terms.
 (Some additional exploitation is however implemented, since we can use
